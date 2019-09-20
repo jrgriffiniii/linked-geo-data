@@ -5,14 +5,17 @@ import { namedNode } from '@rdfjs/data-model';
 // Provide the fcrepo4 namespace for the JSON-LD context
 const context = {
   "@context": {
-    "@vocab": "http://xmlns.com/foaf/0.1/",
-    "friends": "knows",
     "label": "http://www.w3.org/2000/01/rdf-schema#label",
+    "geo": "http://www.opengis.net/ont/geosparql#",
+    "geof": "http://www.opengis.net/def/function/geosparql/",
+
+    "my": "http://example.org/ApplicationSchema#"
   }
 };
 
 // Provide the SPARQL endpoint for querying
-const queryEngine = new ComunicaEngine('https://ruben.verborgh.org/profile/');
+const fragmentURI = 'https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
+const queryEngine = new ComunicaEngine(fragmentURI);
 
 // The object that can create new paths
 const pathFactory = new PathFactory({ context, queryEngine });
@@ -35,9 +38,15 @@ function buildPath(pathArgs) {
  */
 export async function getResources(model) {
 
+  /*
   const resources = buildPath({
     predicate: namedNode('info:fedora/fedora-system:def/model#hasModel'),
     object: namedNode(model)
+  });
+  */
+
+  const resources = buildPath({
+    predicate: namedNode('http://example.org/ApplicationSchema#hasPointGeometry')
   });
 
   return await resources;
