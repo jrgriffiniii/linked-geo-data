@@ -1,17 +1,7 @@
-import { NamespaceManagerInstance, NQuad, RemoteSparqlEndpoint } from 'rdflib-ts';
+import fetch from 'isomorphic-fetch'
 
-// Register prefix to use in application scope
-NamespaceManagerInstance.registerNamespace('ex', 'http://example.org#');
-// Apache Jena Fuseki server running on localhost:3030
-// There is TestStore created on server
 // Provide the SPARQL endpoint for querying
-//const sparqlURL = 'https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
-
-const sparqlURL = 'http://localhost:7200/repositories/test1/statements';
-//https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
-
-// This uses https://github.com/eddieantonio/node-sparql-client
-const remoteEndpoint = new RemoteSparqlEndpoint('test1', sparqlURL);
+const sparqlURL = 'http://localhost:7200/repositories/test1';
 
 /*
  *
@@ -27,57 +17,60 @@ const remoteEndpoint = new RemoteSparqlEndpoint('test1', sparqlURL);
  * @return foo
  * @see ActiveFedora::RDF::Fcrepo::Model.hasModel
  */
+function query(sparqlQuery) {
+  const formats = 'application/sparql-results+json';
+  const postData = `query=${encodeURIComponent(sparqlQuery)}&infer=true&sameAs=true`
+  const query = fetch(sparqlURL, {
+    headers: {
+      'Accept': formats,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    method: 'POST',
+    body: postData
+  });
+
+  const body = query.then( (response) => { return response.text(); } );
+  return body;
+}
+
 export async function getResources(model) {
   //predicate: namedNode('http://example.org/ApplicationSchema#hasPointGeometry')
   //subject: 'http://example.org/ApplicationSchema#PlaceOfInterest'
 
-  const resources = [];
+  let works = [];
+  let sparql;
+  const sparqlQuery = 'SELECT * WHERE { ?subject a <http://pcdm.org/models#Work> }';
+  const response = await query(sparqlQuery);
   try {
-    // Insert a quad into the graph store
-    const newQuad = new NQuad('ex:Alice', 'ex:knows', 'ex:Bob');
-    remoteEndpoint.importQuadsAsync([newQuad]);
-
-    const sparqlQuery = 'SELECT * WHERE { ?subject ?predicate ?object }';
-    let queryResult;
-    try {
-      queryResult = remoteEndpoint.queryAsync(sparqlQuery);
-    } catch (queryError) {
-      console.error(queryError.message);
-      return resources;
-    }
-
-    if (!queryResult.results) {
-      return resources;
-    }
-    console.log('trace3');
-
-    console.log('TRACE11');
-    for (let result of queryResult.results.bindings) {
-      console.log(result.subject.value);
-      console.log(result.predicate.value);
-      console.log(result.object.value);
-
-      // Construct the Resource and add it here
-      resources.append({ subject: result.subject.value });
-    }
-  } catch (error) {
-    console.log('TRACE10');
+    sparql = JSON.parse(response);
+  } catch(error) {
     console.error(error.message);
+    console.error(response);
+    return works;
   }
 
-  return await resources;
-}
+  const results = sparql['results'];
+  const bindings = results['bindings'];
+  for (const binding of bindings) {
+    const subject = binding['subject'];
+    // This should be structured into a different function
+    let work = {};
+    work.id = subject['value'];
+    works.push(work);
+  }
 
+  return works;
+}
 /**
  * For a subject IRI, retrieve an object stored within a specific predicate
  * @param subject
  * @param property
  * @return foo
  */
-export async function getResource(subject, property) {
+export function getResource(subject, property) {
 
   // Fix this
-  return await {};
+  return null;
 }
 
 /**

@@ -4,14 +4,16 @@
   "private": true,
   "dependencies": {
     "@babel/runtime": "^7.6.0",
-    "rdflib-ts": "^1.2.58",
+    "isomorphic-fetch": "^2.2.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-redux": "^7.1.1",
     "react-scripts": "3.1.2",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "terraformer-wkt-parser": "^1.2.0"
+    "sparql-http-client": "^1.1.1",
+    "terraformer-wkt-parser": "^1.2.0",
+    "whatwg-url": "^7.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

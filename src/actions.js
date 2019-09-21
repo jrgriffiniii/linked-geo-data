@@ -31,20 +31,26 @@ function parseWKT(geoSparqlWKT) {
 };
 
 async function getWorks() {
-
-  console.log('TRACE2');
   // Retrieve all Scanned Maps
-  const resources = await getResources('ScannedMap');
+  let resources = [];
+  try {
+    resources = await getResources('ScannedMap');
+  } catch(error) {
+    console.error(error.message)
+    return resources;
+  }
   let works = [];
 
   for (const resource of resources) {
     const work = {};
+    console.log(resource);
     work.title = resource.title;
     work.creator = resource.creator;
     work.coverage = resource.coverage;
-    work.geoJSON = parseWKT(resource.coverage);
-    works.append(work);
+    //work.geoJSON = parseWKT(resource.coverage);
+    works.push(work);
   }
+  console.log(works);
 
   return works;
 }
@@ -53,7 +59,8 @@ function requestAndReceiveWorks() {
   return dispatch => {
     dispatch(requestWorks());
     return getWorks()
-      .then(works => dispatch(receiveWorks(works)));
+      .then(works => dispatch(receiveWorks(works)))
+      .catch(error => { throw error });
   };
 }
 
