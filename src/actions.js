@@ -10,7 +10,7 @@ function shouldRequestWorks(state) {
 export function requestWorks() {
   return {
     type: types.REQUEST_WORKS,
-    works: [],
+    items: [],
     isRequesting: true
   };
 }
@@ -19,7 +19,7 @@ export function receiveWorks(works) {
   return {
     type: types.RECEIVE_WORKS,
     isRequesting: false,
-    works: works,
+    items: [],
     receivedAt: Date.now()
   };
 }
@@ -32,6 +32,7 @@ function parseWKT(geoSparqlWKT) {
 
 async function getWorks() {
 
+  console.log('TRACE2');
   // Retrieve all Scanned Maps
   const resources = await getResources('ScannedMap');
   let works = [];
@@ -51,7 +52,8 @@ async function getWorks() {
 function requestAndReceiveWorks() {
   return dispatch => {
     dispatch(requestWorks());
-    return getWorks().then(works => dispatch(receiveWorks(works)));
+    return getWorks()
+      .then(works => dispatch(receiveWorks(works)));
   };
 }
 
