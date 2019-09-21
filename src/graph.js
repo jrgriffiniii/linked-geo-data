@@ -1,42 +1,25 @@
-import { PathFactory } from 'ldflex';
-import ComunicaEngine from 'ldflex-comunica';
-import { namedNode } from '@rdfjs/data-model';
+import { NamespaceManagerInstance, NQuad, RemoteSparqlEndpoint } from 'rdflib-ts';
 
-// Provide the fcrepo4 namespace for the JSON-LD context
-const context = {
-  "@context": {
-    "@vocab": "http://xmlns.com/foaf/0.1/",
-    "friends": "knows"
-  }
-};
+// Register prefix to use in application scope
+NamespaceManagerInstance.registerNamespace('ex', 'http://example.org#');
+// Apache Jena Fuseki server running on localhost:3030
+// There is TestStore created on server
+// Provide the SPARQL endpoint for querying
+//const sparqlURL = 'https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
+
+const sparqlURL = 'http://localhost:7200/repositories/test1/statements';
+//https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
+
+// This uses https://github.com/eddieantonio/node-sparql-client
+const remoteEndpoint = new RemoteSparqlEndpoint('test1', sparqlURL);
 
 /*
  *
    "label": "http://www.w3.org/2000/01/rdf-schema#label",
     "geo": "http://www.opengis.net/ont/geosparql#",
     "geof": "http://www.opengis.net/def/function/geosparql/",
-
     "my": "http://example.org/ApplicationSchema#"
-
 */
-
-// Provide the SPARQL endpoint for querying
-//const fragmentURI = 'https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
-const fragmentURI = 'https://ruben.verborgh.org/profile/';
-//const fragmentURI = 'https://raw.githubusercontent.com/jrgriffiniii/jrgriffiniii.github.io/geosparql/geosparql-example.rdf';
-const queryEngine = new ComunicaEngine(fragmentURI);
-
-// The object that can create new paths
-const pathFactory = new PathFactory({ context, queryEngine });
-
-/**
- * Build an LDFlex query using a set of arguments
- * @param pathArgs
- * @return foo
- */
-function buildPath(pathArgs) {
-  return pathFactory.create(pathArgs);
-}
 
 /**
  * For a model type literal, retrieve all resources
@@ -45,34 +28,42 @@ function buildPath(pathArgs) {
  * @see ActiveFedora::RDF::Fcrepo::Model.hasModel
  */
 export async function getResources(model) {
-
-  /*
-  const resources = buildPath({
-    predicate: namedNode('info:fedora/fedora-system:def/model#hasModel'),
-    object: namedNode(model)
-  });
-  */
-
   //predicate: namedNode('http://example.org/ApplicationSchema#hasPointGeometry')
   //subject: 'http://example.org/ApplicationSchema#PlaceOfInterest'
 
-  const path = new PathFactory({ context, queryEngine });
-  const ruben = path.create({ subject: namedNode('https://ruben.verborgh.org/profile/#me') });
-  console.log('TRACE231');
-  try{
-    console.log(`Ruben: ${await ruben.name}`);
-  } catch(error) {
-    console.log('TRACE');
-    console.log(error);
-  }
+  const resources = [];
+  try {
+    // Insert a quad into the graph store
+    const newQuad = new NQuad('ex:Alice', 'ex:knows', 'ex:Bob');
+    remoteEndpoint.importQuadsAsync([newQuad]);
 
-  const resource = buildPath({
-    subject: namedNode('https://ruben.verborgh.org/profile/#me')
-  });
-  console.log('TRACE32');
-  console.log(`This is a ${await resource.name}`);
-  //console.log(`This has the WKT literal ${resource['http://www.opengis.net/ont/geosparql#asWKT']}`);
-  const resources = [resource];
+    const sparqlQuery = 'SELECT * WHERE { ?subject ?predicate ?object }';
+    let queryResult;
+    try {
+      queryResult = remoteEndpoint.queryAsync(sparqlQuery);
+    } catch (queryError) {
+      console.error(queryError.message);
+      return resources;
+    }
+
+    if (!queryResult.results) {
+      return resources;
+    }
+    console.log('trace3');
+
+    console.log('TRACE11');
+    for (let result of queryResult.results.bindings) {
+      console.log(result.subject.value);
+      console.log(result.predicate.value);
+      console.log(result.object.value);
+
+      // Construct the Resource and add it here
+      resources.append({ subject: result.subject.value });
+    }
+  } catch (error) {
+    console.log('TRACE10');
+    console.error(error.message);
+  }
 
   return await resources;
 }
@@ -85,10 +76,8 @@ export async function getResources(model) {
  */
 export async function getResource(subject, property) {
 
-  // Use the IRI as the subject
-  const resource = buildPath({ subject: namedNode(subject) });
-
-  return await resource[property];
+  // Fix this
+  return await {};
 }
 
 /**
