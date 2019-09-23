@@ -1,6 +1,5 @@
 import * as types from './types';
-import { getResources } from './graph';
-import wkt from 'terraformer-wkt-parser';
+import { getResourcesByModel } from './graph';
 
 function shouldRequestWorks(state) {
   const works = state.works;
@@ -19,40 +18,22 @@ export function receiveWorks(works) {
   return {
     type: types.RECEIVE_WORKS,
     isRequesting: false,
-    items: [],
+    items: works,
     receivedAt: Date.now()
   };
 }
 
-function parseWKT(geoSparqlWKT) {
-
-  const wktLiteral = geoSparqlWKT;
-  return wkt.parse(wktLiteral);
-};
 
 async function getWorks() {
-  // Retrieve all Scanned Maps
   let resources = [];
+
   try {
-    resources = await getResources('ScannedMap');
+    resources = await getResourcesByModel('ScannedMap');
   } catch(error) {
     console.error(error.message)
-    return resources;
   }
-  let works = [];
 
-  for (const resource of resources) {
-    const work = {};
-    console.log(resource);
-    work.title = resource.title;
-    work.creator = resource.creator;
-    work.coverage = resource.coverage;
-    //work.geoJSON = parseWKT(resource.coverage);
-    works.push(work);
-  }
-  console.log(works);
-
-  return works;
+  return resources;
 }
 
 function requestAndReceiveWorks() {

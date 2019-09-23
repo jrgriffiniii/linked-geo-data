@@ -3,7 +3,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import * as types from '../types'
 import * as actions from '../actions'
-//import fetchMock from 'fetch-mock'
+import fetchMock from 'fetch-mock'
 import tk from 'timekeeper'
 
 const middlewares = [thunk]
@@ -17,7 +17,7 @@ describe('actions', () => {
   })
 
   afterEach(() => {
-    //fetchMock.restore()
+    fetchMock.restore()
   })
 
   it('dispatches REQUEST_WORKS and RECEIVE_WORKS when works have been requested and received from the API', () => {
@@ -30,7 +30,6 @@ describe('actions', () => {
 
     }
 
-    /*
     fetchMock.getOnce('http://localhost:3000/browse/works', {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -41,13 +40,13 @@ describe('actions', () => {
         ]
       }
     })
-    */
 
     const expectedActions = [
-      { type: types.REQUEST_WORKS, isRequesting: true, works: [] },
-//      { type: types.RECEIVE_WORKS, isRequesting: false, works: [work1, work2], receivedAt: currentTime }
+      { type: types.REQUEST_WORKS, isRequesting: true, items: [] },
+      { type: types.RECEIVE_WORKS, isRequesting: false, items: [work1, work2], receivedAt: currentTime }
     ]
     const store = mockStore({ works: [] })
+    expect.assertions(1);
 
     store.dispatch(actions.updateWorks()).then(() => {
       expect(store.getActions()).toEqual(expectedActions)
