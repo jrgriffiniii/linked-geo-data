@@ -9,7 +9,7 @@ const initialWorksState = {
 }
 
 /**
- * Function for updating the state in response to requesting or receiving a
+ * This does not handle cases where the state is being initialized
  */
 function updatedWorksState(state, action) {
   switch (action.type) {
@@ -23,13 +23,16 @@ function updatedWorksState(state, action) {
         isRequesting: false,
         didInvalidate: false,
         lastUpdated: action.receivedAt,
-        items: action.works
+        items: action.items
       });
     default:
       return state;
   }
 }
 
+/**
+ * Handles the updates for works in the state for all actions
+ */
 function works(currentState = {}, action = {}) {
   const state = Object.assign({}, initialWorksState, currentState);
   const updated = updatedWorksState(currentState, action);

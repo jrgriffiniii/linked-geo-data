@@ -1,6 +1,9 @@
 import * as types from './types';
 import { getResourcesByModel } from './graph';
 
+/**
+ * Use the application state to determine if works should be requested
+ */
 function shouldRequestWorks(state) {
   const works = state.works;
   return !works.isRequesting;

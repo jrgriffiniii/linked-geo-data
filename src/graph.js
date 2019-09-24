@@ -6,7 +6,6 @@ const sparqlURL = 'http://localhost:7200/repositories/test1';
 
 // Convert the WKT into GeoJSON
 function parseWKT(geoSparqlWKT) {
-
   const wktLiteral = geoSparqlWKT;
   return wkt.parse(wktLiteral);
 };
@@ -75,30 +74,10 @@ export async function getResourcesByModel(model) {
     work.id = subject['value'];
     work.coverage = coverage['value'];
     // Stubbing for coverage
-    work.coverage = 'POLYGON((-125 38.4,-121.8 38.4,-121.8 40.9,-125 40.9,-125 38.4))';
+    work.coverage = 'POLYGON ((-74.67430830001832 40.34526851214889, -74.6449112892151 40.34526851214889, -74.6449112892151 40.35364130011419, -74.67430830001832 40.35364130011419, -74.67430830001832 40.34526851214889))'
     work.geoJSON = parseWKT(work.coverage);
     works.push(work);
   }
 
   return works;
-}
-/**
- * For a subject IRI, retrieve an object stored within a specific predicate
- * @param subject
- * @param property
- * @return foo
- */
-export function getResource(subject, property) {
-
-  return null;
-}
-
-/**
- * For a subject IRI, retrieve the spatial information encoded in <dc:coverage>
- * @param iri
- * @return foo
- */
-export async function getResourceCoverage(iri) {
-
-  return await getResource(iri, namedNode('http://purl.org/dc/terms/coverage'));
 }
