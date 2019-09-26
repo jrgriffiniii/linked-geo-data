@@ -45,7 +45,9 @@ GeoMap.propTypes = {
 
 GeoMap.defaultProps = {
   style: {
-    height: "512px"
+    height: "512px",
+    marginTop: "1.35rem",
+    marginBottom: "1.35rem"
   },
   lat: 40.3494507,
   lng: -74.6596194,

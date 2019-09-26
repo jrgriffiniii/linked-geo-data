@@ -2,25 +2,22 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { updateWorks } from '../actions'
-import { Map, TileLayer, GeoJSON } from 'react-leaflet'
 import GeoMap from './GeoMap';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  input: {
-    display: 'none',
-  },
-}));
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import AppBar from '@material-ui/core/AppBar';
+import ScrollTop from './ScrollTop';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import scannedMapThumbnail from '../static/images/scanned_map_thumbnail.png';
 
 class AsyncApp extends Component {
   constructor(props) {
@@ -46,29 +43,44 @@ class AsyncApp extends Component {
 
     return (
       <div>
-        <Container maxWidth="lg">
-          <Typography variant="h1" component="h1" gutterBottom align="center" style={this.props.style.h1}>Linked Geo Data 🌐</Typography>
+        <AppBar position="fixed">
+          <Toolbar id="navbar">
+            <IconButton edge="start" color="inherit" aria-label="menu">
+            </IconButton>
+
+            <IconButton variant="contained" onClick={this.handleRefreshClick} disabled={ isRequesting } style={{color: "white"}}>
+              <RotateLeftIcon />
+            </IconButton>
+              <span>Refresh Graph Data</span>
+          </Toolbar>
+        </AppBar>
+
+        <Container maxWidth="lg" style={this.props.style.navbar} id="title">
+          <Typography variant="h1" component="h1" gutterBottom align="center" style={this.props.style.h1}>Linked Geo Data <span role="img" aria-label="globe">🌐</span></Typography>
         </Container>
 
-        <GeoMap works={ this.props.works }/>
+        <GeoMap works={ this.props.works } />
 
-        <Grid container spacing={2} align="center" gutterBottom style={this.props.style.grid}>
-          <Grid item xs={6}>
-            <Card>
-              <CardContent>
-                {lastUpdated && (
-                  <span>Last updated at {new Date(lastUpdated).toLocaleTimeString()}.{' '}</span>
-                )}
-              </CardContent>
-              <CardActions align="center">
-                <Button variant="contained" onClick={this.handleRefreshClick} disabled={ isRequesting } >Refresh</Button>
-              </CardActions>
-            </Card>
-          </Grid>
+        <Container maxWidth="lg">
+          <Typography variant="h4" component="h2" gutterBottom align="center">Spatial Search Results</Typography>
+          <Grid container spacing={2} align="center" style={this.props.style.grid}>
 
-          <Grid item xs={6}>
+            <Grid item xs={3}>
+              <Card>
+                <CardHeader title="My Scanned Map" />
+                <CardMedia image={scannedMapThumbnail} style={this.props.style.itemThumbnail}/>
+                <CardContent>
+                  <Typography variant="body2" color="textSecondary" component="p">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur viverra, sapien a vestibulum accumsan, augue magna porttitor dolor, imperdiet bibendum elit neque a nunc. Vestibulum eget dui at lorem tempus aliquet.</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
           </Grid>
-        </Grid>
+        </Container>
+
+        <Container align="right">
+          <ScrollTop targetSelector="#title" style={this.props.style.scrollTop} />
+        </Container>
       </div>
     )
   }
@@ -81,7 +93,6 @@ AsyncApp.propTypes = {
   dispatch: PropTypes.func.isRequired,
   style: PropTypes.object
 }
-
 AsyncApp.defaultProps = {
   style: {
     h1: {
@@ -89,6 +100,16 @@ AsyncApp.defaultProps = {
     },
     grid: {
       marginTop: "0.35em"
+    },
+    navbar: {
+      marginTop: "6.15em"
+    },
+    scrollTop: {
+      marginBottom: "0.65em"
+    },
+    itemThumbnail: {
+      backgroundSize: "144px",
+      height: "144px"
     }
   }
 }
