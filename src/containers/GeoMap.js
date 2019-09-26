@@ -51,6 +51,6 @@ GeoMap.defaultProps = {
   },
   lat: 40.3494507,
   lng: -74.6596194,
-  zoom: 16
+  zoom: 14
 }
 
