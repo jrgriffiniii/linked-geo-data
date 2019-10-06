@@ -36,11 +36,6 @@ class AsyncApp extends Component {
     dispatch(updateWorks())
   }
 
-  componentDidMount() {
-    const { dispatch } = this.props
-    dispatch(updateWorks())
-  }
-
   render() {
     const { works, isRequesting, lastUpdated } = this.props
 
@@ -62,7 +57,7 @@ class AsyncApp extends Component {
           <Typography variant="h1" component="h1" gutterBottom align="center" style={this.props.style.h1}>Linked Geo Data <span role="img" aria-label="globe">🌐</span></Typography>
         </Container>
 
-        <GeoMap works={ this.props.works } />
+        <GeoMap works={ this.props.works } dispatch={ this.props.dispatch } />
 
         <Container maxWidth="lg">
           <Typography variant="h4" component="h2" gutterBottom align="center">Spatial Search Results</Typography>

@@ -2,21 +2,12 @@ import fetch from 'isomorphic-fetch'
 import wkt from 'terraformer-wkt-parser';
 
 // Provide the SPARQL endpoint for querying
-const sparqlURL = 'http://localhost:7200/repositories/test1';
+const sparqlURL = 'http://localhost:7200/repositories/fcrepo';
 
 // Convert the WKT into GeoJSON
 function parseWKT(geoSparqlWKT) {
-  const wktLiteral = geoSparqlWKT;
-  return wkt.parse(wktLiteral);
+  return wkt.parse(geoSparqlWKT);
 };
-
-/*
- *
-   "label": "http://www.w3.org/2000/01/rdf-schema#label",
-    "geo": "http://www.opengis.net/ont/geosparql#",
-    "geof": "http://www.opengis.net/def/function/geosparql/",
-    "my": "http://example.org/ApplicationSchema#"
-*/
 
 /**
  * For a model type literal, retrieve all resources
@@ -36,25 +27,87 @@ function query(sparqlQuery) {
     body: postData
   });
 
-  const body = query.then( (response) => { return response.text(); } );
+  const body = query.then(response => response.text());
   return body;
 }
 
-export async function getResourcesByModel(model) {
+function buildWork(queryResult) {
+  const work = {};
+  const subject = queryResult['subject'];
+  const model = queryResult['model'];
+  const title = queryResult['title'];
+  const abstract = queryResult['abstract'];
+  const coverage = queryResult['coverage'];
+
+  // This should be structured into a different function
+  work.id = subject['value'];
+  work.model = model['value'];
+  work.title = title['value'];
+
+  // Optional properties
+  if (abstract) {
+    work.abstract = abstract['value'];
+  }
+
+  if (coverage) {
+    work.coverage = coverage['value'];
+    work.geoJSON = parseWKT(work.coverage);
+  }
+
+  return work;
+}
+
+function buildWorks(queryResults) {
+  const works = [];
+  const bindings = queryResults['bindings'];
+
+  for (const binding of bindings) {
+    const work = buildWork(binding);
+    works.push(work);
+  }
+
+  return works;
+}
+
+function parseBoundingBox(boundingBox) {
+  return wkt.convert(boundingBox);
+}
+
+function buildSparqlQuery(boundingBox, model) {
+  const wktLiteral = parseBoundingBox(boundingBox);
+  const sparqlQuery = `
+    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+    PREFIX fcrepo: <info:fedora/fedora-system:def/model#>
+    PREFIX dc11: <http://purl.org/dc/elements/1.1/>
+    PREFIX dc: <http://purl.org/dc/terms/>
+
+    SELECT *
+    WHERE {
+      ?subject a ?class ;
+        fcrepo:hasModel ?model ;
+        dc:title ?title ;
+        dc11:coverage ?coverage .
+    }
+  `;
+  /*
+        dc:abstract ?abstract ;
+?coverage geo:sfWithin '''
+        <http://www.opengis.net/def/crs/OGC/1.3/CRS84>
+          ${wktLiteral}
+        '''^^geo:wktLiteral .
+
+   * */
+
+  return sparqlQuery;
+}
+
+export async function getResources(boundingBox, model) {
   //predicate: namedNode('http://example.org/ApplicationSchema#hasPointGeometry')
   //subject: 'http://example.org/ApplicationSchema#PlaceOfInterest'
 
   let works = [];
   let sparql;
-  const sparqlQuery = `
-    PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-
-    SELECT *
-    WHERE {
-      ?subject a ?class;
-               geo:asWKT ?coverage .
-    }
-  `;
+  const sparqlQuery = buildSparqlQuery(boundingBox);
   const response = await query(sparqlQuery);
   try {
     sparql = JSON.parse(response);
@@ -65,19 +118,7 @@ export async function getResourcesByModel(model) {
   }
 
   const results = sparql['results'];
-  const bindings = results['bindings'];
-  for (const binding of bindings) {
-    const subject = binding['subject'];
-    const coverage = binding['coverage'];
-    // This should be structured into a different function
-    let work = {};
-    work.id = subject['value'];
-    work.coverage = coverage['value'];
-    // Stubbing for coverage
-    work.coverage = 'POLYGON ((-74.67430830001832 40.34526851214889, -74.6449112892151 40.34526851214889, -74.6449112892151 40.35364130011419, -74.67430830001832 40.35364130011419, -74.67430830001832 40.34526851214889))'
-    work.geoJSON = parseWKT(work.coverage);
-    works.push(work);
-  }
+  works = buildWorks(results);
 
   return works;
 }

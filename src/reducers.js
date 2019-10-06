@@ -9,7 +9,6 @@ const initialWorksState = {
 }
 
 /**
- * This does not handle cases where the state is being initialized
  */
 function updatedWorksState(state, action) {
   switch (action.type) {
@@ -46,8 +45,37 @@ function works(currentState = {}, action = {}) {
   }
 }
 
+// Define the initial state for Works in the store
+const initialCurrentExtentState = {
+  extent: {}
+}
+
+function updatedCurrentExtentState(state, action) {
+  switch (action.type) {
+    case types.UPDATE_MAP_EXTENT:
+      return Object.assign({}, state, {
+        extent: action.extent
+      });
+    default:
+      return state;
+  }
+}
+
+function currentExtent(currentState = {}, action) {
+  const state = Object.assign({}, initialCurrentExtentState, currentState);
+  const updated = updatedCurrentExtentState(currentState, action);
+
+  switch (action.type) {
+    case types.UPDATE_MAP_EXTENT:
+      return Object.assign({}, state, updated);
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
-  works
+  works,
+  currentExtent
 });
 
 export default rootReducer;

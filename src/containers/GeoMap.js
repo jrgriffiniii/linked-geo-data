@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import L from 'leaflet';
 import PropTypes from 'prop-types'
+import { updateMap } from '../actions';
 
 export default class GeoMap extends Component {
   state = {
@@ -15,10 +16,14 @@ export default class GeoMap extends Component {
     })
 
     this.map = L.map('map', {
-            center: [this.state.lat, this.state.lng],
-            zoom: this.state.zoom,
-            layers: [osmLayer]
-          });
+      center: [this.state.lat, this.state.lng],
+      zoom: this.state.zoom,
+      layers: [osmLayer]
+    });
+
+    this.map.on('load', (event => this.props.dispatch(updateMap(event))));
+    this.map.on('moveend', (event => this.props.dispatch(updateMap(event))));
+    this.map.on('zoomend', (event => this.props.dispatch(updateMap(event))));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -40,7 +45,8 @@ GeoMap.propTypes = {
   style: PropTypes.object,
   lat: PropTypes.number,
   lng: PropTypes.number,
-  zoom: PropTypes.number
+  zoom: PropTypes.number,
+  dispatch: PropTypes.func.isRequired
 }
 
 GeoMap.defaultProps = {
