@@ -80,17 +80,20 @@ function buildSparqlQuery(boundingBox, model) {
     PREFIX fcrepo: <info:fedora/fedora-system:def/model#>
     PREFIX dc11: <http://purl.org/dc/elements/1.1/>
     PREFIX dc: <http://purl.org/dc/terms/>
+    PREFIX hydra: <http://projecthydra.org/works/models#>
 
     SELECT *
     WHERE {
-      ?subject a ?class ;
+      ?subject a hydra:Work ;
         fcrepo:hasModel ?model ;
         dc:title ?title ;
         dc11:coverage ?coverage .
+      OPTIONAL {
+        ?subject  dc11:description  ?abstract
+      }
     }
   `;
   /*
-        dc:abstract ?abstract ;
 ?coverage geo:sfWithin '''
         <http://www.opengis.net/def/crs/OGC/1.3/CRS84>
           ${wktLiteral}

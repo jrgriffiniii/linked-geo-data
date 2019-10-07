@@ -63,14 +63,18 @@ class AsyncApp extends Component {
           <Typography variant="h4" component="h2" gutterBottom align="center">Spatial Search Results</Typography>
           <Grid container spacing={2} align="center" style={this.props.style.grid}>
 
-              { [0,1,3,4,5].map((work) => {
+              { this.props.works.map((work) => {
                 return(
                   <Grid item xs={3}>
                     <Card>
-                      <CardHeader title="My Scanned Map" />
+                      <CardHeader title={work.title} />
                       <CardMedia image={scannedMapThumbnail} style={this.props.style.itemThumbnail} />
                       <CardContent>
-                        <Typography variant="body2" color="textSecondary" component="p">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur viverra, sapien a vestibulum accumsan, augue magna porttitor dolor, imperdiet bibendum elit neque a nunc. Vestibulum eget dui at lorem tempus aliquet.</Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >{work.abstract}</Typography>
                       </CardContent>
                     </Card>
                   </Grid>

@@ -22,11 +22,11 @@ export function updateMap(event) {
       "type": "Polygon",
       "coordinates": [
         [
-          [sw.lat, sw.lng],
-          [nw.lat, nw.lng],
-          [ne.lat, ne.lng],
-          [se.lat, se.lng],
-          [sw.lat, sw.lng]
+          [sw.lng, sw.lat],
+          [nw.lng, nw.lat],
+          [ne.lng, ne.lat],
+          [se.lng, se.lat],
+          [sw.lng, sw.lat]
         ]
       ]
     };

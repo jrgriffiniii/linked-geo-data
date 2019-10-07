@@ -7,7 +7,8 @@ export default class GeoMap extends Component {
   state = {
     lat: this.props.lat,
     lng: this.props.lng,
-    zoom: this.props.zoom
+    zoom: this.props.zoom,
+    renderedWorks: [],
   }
 
   componentDidMount() {
@@ -27,9 +28,15 @@ export default class GeoMap extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    const renderedWorks = this.state.renderedWorks;
+
     for (const work of this.props.works) {
-      // Only add this to the map if it has not already been added
-      L.geoJSON(work.geoJSON).addTo(this.map);
+      // Only add this work to the map if it has not already been added
+      if (renderedWorks.indexOf(work.id) === -1) {
+        L.geoJSON(work.geoJSON).addTo(this.map);
+        renderedWorks.push(work.id);
+        this.setState({renderedWorks: renderedWorks});
+      }
     }
   }
 
