@@ -6,7 +6,9 @@ const sparqlURL = 'http://localhost:7200/repositories/fcrepo';
 
 // Convert the WKT into GeoJSON
 function parseWKT(geoSparqlWKT) {
-  return wkt.parse(geoSparqlWKT);
+  // Terraformer does *not* parse CRS assertions
+  const wktWithoutCrs = geoSparqlWKT.replace('<http://www.opengis.net/def/crs/OGC/1.3/CRS84>', '');
+  return wkt.parse(wktWithoutCrs);
 };
 
 /**
@@ -77,6 +79,7 @@ function buildSparqlQuery(boundingBox, model) {
   const wktLiteral = parseBoundingBox(boundingBox);
   const sparqlQuery = `
     PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+    PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
     PREFIX fcrepo: <info:fedora/fedora-system:def/model#>
     PREFIX dc11: <http://purl.org/dc/elements/1.1/>
     PREFIX dc: <http://purl.org/dc/terms/>
@@ -91,15 +94,12 @@ function buildSparqlQuery(boundingBox, model) {
       OPTIONAL {
         ?subject  dc11:description  ?abstract
       }
-    }
-  `;
-  /*
-?coverage geo:sfWithin '''
+      FILTER (geof:sfWithin(?coverage, '''
         <http://www.opengis.net/def/crs/OGC/1.3/CRS84>
           ${wktLiteral}
-        '''^^geo:wktLiteral .
-
-   * */
+        '''^^geo:wktLiteral))
+    }
+  `;
 
   return sparqlQuery;
 }
