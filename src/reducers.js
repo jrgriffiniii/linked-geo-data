@@ -8,8 +8,6 @@ const initialWorksState = {
   items: []
 }
 
-/**
- */
 function updatedWorksState(state, action) {
   switch (action.type) {
     case types.REQUEST_WORKS:

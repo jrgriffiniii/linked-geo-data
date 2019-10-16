@@ -66,4 +66,3 @@ GeoMap.defaultProps = {
   lng: -74.6596194,
   zoom: 14
 }
-

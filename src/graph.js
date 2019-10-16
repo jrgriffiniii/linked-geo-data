@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch'
 import wkt from 'terraformer-wkt-parser';
 
 // Provide the SPARQL endpoint for querying
-const sparqlURL = 'http://localhost:7200/repositories/fcrepo';
+const sparqlURL = process.env.REACT_APP_SPARQL_URL || 'http://localhost:7200/repositories/fcrepo';
 
 // Convert the WKT into GeoJSON
 function parseWKT(geoSparqlWKT) {
@@ -105,9 +105,6 @@ function buildSparqlQuery(boundingBox, model) {
 }
 
 export async function getResources(boundingBox, model) {
-  //predicate: namedNode('http://example.org/ApplicationSchema#hasPointGeometry')
-  //subject: 'http://example.org/ApplicationSchema#PlaceOfInterest'
-
   let works = [];
   let sparql;
   const sparqlQuery = buildSparqlQuery(boundingBox);

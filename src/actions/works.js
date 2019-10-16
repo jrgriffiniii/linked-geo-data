@@ -26,19 +26,10 @@ function receiveWorks(works) {
   };
 }
 
-
 async function getWorks(boundingBox) {
   let resources = [];
 
   resources = await getResources(boundingBox);
-  /*
-  try {
-    resources = await getResources(boundingBox);
-  } catch(error) {
-    console.error(error.message)
-  }
-  */
-
   return resources;
 }
 

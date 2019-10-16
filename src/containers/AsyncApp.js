@@ -5,12 +5,10 @@ import { updateWorks } from '../actions'
 import GeoMap from './GeoMap';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -37,7 +35,7 @@ class AsyncApp extends Component {
   }
 
   render() {
-    const { works, isRequesting, lastUpdated } = this.props
+    const { works, isRequesting } = this.props
 
     return (
       <div>
@@ -57,7 +55,7 @@ class AsyncApp extends Component {
           <Typography variant="h1" component="h1" gutterBottom align="center" style={this.props.style.h1}>Linked Geo Data <span role="img" aria-label="globe">🌐</span></Typography>
         </Container>
 
-        <GeoMap works={ this.props.works } dispatch={ this.props.dispatch } />
+        <GeoMap works={ works } dispatch={ this.props.dispatch } />
 
         <Container maxWidth="lg">
           <Typography variant="h4" component="h2" gutterBottom align="center">Spatial Search Results</Typography>
@@ -87,7 +85,7 @@ class AsyncApp extends Component {
         <div id="footer" style={ {marginTop: "1.55rem"} }>
           <Divider />
           <Typography style={{padding: "0.85rem 1.35rem"}}>
-            <Link href="https://samvera.org"><img src={samveraLogo} width="146px" /></Link>
+            <Link href="https://samvera.org"><img alt="samvera community" src={samveraLogo} width="146px" /></Link>
           </Typography>
         </div>
 
