@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
-import L from 'leaflet';
 import PropTypes from 'prop-types'
-import { updateMap } from '../actions';
 
-export default class GeoMap extends Component {
+import L from 'leaflet';
+
+import { updateMap } from '../actions';
+import { withStyles } from '@material-ui/core/styles';
+
+class GeoMap extends Component {
   state = {
     lat: this.props.lat,
     lng: this.props.lng,
@@ -42,14 +45,14 @@ export default class GeoMap extends Component {
 
   render() {
     return (
-      <div id="map" style={this.props.style} />
+      <div id="map" className={this.props.classes.root} />
     )
   }
 }
 
 GeoMap.propTypes = {
   works: PropTypes.array.isRequired,
-  style: PropTypes.object,
+  classes: PropTypes.object.isRequired,
   lat: PropTypes.number,
   lng: PropTypes.number,
   zoom: PropTypes.number,
@@ -57,12 +60,17 @@ GeoMap.propTypes = {
 }
 
 GeoMap.defaultProps = {
-  style: {
-    height: "512px",
-    marginTop: "1.35rem",
-    marginBottom: "1.35rem"
-  },
   lat: 40.3494507,
   lng: -74.6596194,
   zoom: 14
 }
+
+const styles = {
+  root: {
+    height: "512px",
+    marginTop: "1.35rem",
+    marginBottom: "1.35rem"
+  }
+};
+
+export default withStyles(styles)(GeoMap);
