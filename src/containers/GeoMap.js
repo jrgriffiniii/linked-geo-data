@@ -59,10 +59,13 @@ GeoMap.propTypes = {
   dispatch: PropTypes.func.isRequired
 }
 
+/**
+ * Initialize the location for the workshop examples
+ */
 GeoMap.defaultProps = {
-  lat: 40.3494507,
-  lng: -74.6596194,
-  zoom: 14
+  lat: 30.1612779,
+  lng: 22.2778408,
+  zoom: 5
 }
 
 const styles = {
