@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { updateWorks } from '../actions'
 
 import GeoMap from './GeoMap';
+import Logo from './Logo';
 
 import AppBar from '@material-ui/core/AppBar';
 import Card from '@material-ui/core/Card';
@@ -57,7 +58,7 @@ class AsyncApp extends Component {
         </AppBar>
 
         <Container maxWidth="lg" className={this.props.classes.navbar} id="title">
-          <Typography variant="h1" component="h1" gutterBottom align="center" className={this.props.classes.h1}>Linked Geo Data <span role="img" aria-label="globe">🌐</span></Typography>
+          <Typography variant="h1" component="h1" gutterBottom align="center" className={this.props.classes.h1}>Linked Geo Data <Logo /></Typography>
         </Container>
 
         <GeoMap works={ works } dispatch={ this.props.dispatch } />
